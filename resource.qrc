@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/remove.png</file>
+        <file>img/unvisible.png</file>
+        <file>img/visible.png</file>
+    </qresource>
+</RCC>
