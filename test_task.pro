@@ -35,7 +35,9 @@ SOURCES += \
     rectobject.cpp \
     ellipseobject.cpp \
     lineobject.cpp \
-    triangleobject.cpp
+    triangleobject.cpp \
+    itemdelegate.cpp \
+    delegate.cpp
 
 HEADERS += \
         testtask.h \
@@ -46,10 +48,13 @@ HEADERS += \
     rectobject.h \
     ellipseobject.h \
     lineobject.h \
-    triangleobject.h
+    triangleobject.h \
+    itemdelegate.h \
+    delegate.h
 
 FORMS += \
-        testtask.ui
+        testtask.ui \
+    delegate.ui
 
 RESOURCES += \
     resource.qrc

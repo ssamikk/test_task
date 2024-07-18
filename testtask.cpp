@@ -2,6 +2,7 @@
 #include "ui_testtask.h"
 #include "workerthread.h"
 #include "infomodel.h"
+#include "itemdelegate.h"
 
 #include <QActionGroup>
 #include <QToolButton>
@@ -24,6 +25,10 @@ TestTask::TestTask(QWidget *parent) :
     ui->graphicsView->setScene(scen);
     model = new InfoModel(this);
     ui->tableView->setModel(model);
+    ui->tableView->setItemDelegate(new ItemDelegate(this));
+    ui->tableView->setColumnWidth(InfoModel::CId, 50);
+    ui->tableView->setColumnWidth(InfoModel::CVisible, 50);
+    ui->tableView->setColumnWidth(InfoModel::CRemove, 50);
 }
 
 TestTask::~TestTask()
@@ -54,10 +59,10 @@ void TestTask::handleResults(DataObject *obj)
     removeButton->setIcon(QIcon(":/img/remove.png"));
     connect(removeButton, &QToolButton::clicked, this, &TestTask::removeRow);
     ui->tableView->setIndexWidget(model->index(model->rowCount()-1, InfoModel::CRemove), removeButton);
-    QToolButton *button = new QToolButton(ui->tableView);
-    button->setIcon(QIcon(":/img/visible.png"));
-    connect(button, &QToolButton::clicked, this, &TestTask::makeVisible);
-    ui->tableView->setIndexWidget(model->index(model->rowCount()-1, InfoModel::CVisible), button);
+//    QToolButton *button = new QToolButton(ui->tableView);
+//    button->setIcon(QIcon(":/img/visible.png"));
+//    connect(button, &QToolButton::clicked, this, &TestTask::makeVisible);
+//    ui->tableView->setIndexWidget(model->index(model->rowCount()-1, InfoModel::CVisible), button);
 }
 
 void TestTask::removeRow()

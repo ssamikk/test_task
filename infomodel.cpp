@@ -114,6 +114,15 @@ bool InfoModel::setData(const QModelIndex &index, const QVariant &value, int rol
     return false;
 }
 
+Qt::ItemFlags InfoModel::flags(const QModelIndex &index) const
+{
+    Qt::ItemFlags flag = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+    if (index.column() == CVisible) {
+        flag |= Qt::ItemIsEditable | Qt::ItemIsUserCheckable;
+    }
+    return flag;
+}
+
 void InfoModel::addObj(DataObject *obj)
 {
     int row = dataObj.size();

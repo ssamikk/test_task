@@ -22,6 +22,9 @@ qt6_add_resources(QRC_SOURCES resource.qrc)
 set(TEST_TASK_SRCS
     testtask.ui
     testtask.cpp
+    delegate.ui
+    delegate.cpp
+    itemdelegate.cpp
     dataobject.cpp
     ellipseobject.cpp
     infomodel.cpp

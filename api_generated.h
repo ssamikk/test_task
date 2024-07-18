@@ -13,6 +13,9 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 24 &&
               FLATBUFFERS_VERSION_REVISION == 25,
              "Non-compatible flatbuffers version included");
 
+struct Figure;
+struct FigureBuilder;
+
 struct RectData;
 struct RectDataBuilder;
 
@@ -24,6 +27,105 @@ struct TriangleDataBuilder;
 
 struct LineData;
 struct LineDataBuilder;
+
+enum FigureType : uint16_t {
+  FigureType_Rect = 0,
+  FigureType_Ellipse = 1,
+  FigureType_Triangle = 2,
+  FigureType_Line = 3,
+  FigureType_MIN = FigureType_Rect,
+  FigureType_MAX = FigureType_Line
+};
+
+inline const FigureType (&EnumValuesFigureType())[4] {
+  static const FigureType values[] = {
+    FigureType_Rect,
+    FigureType_Ellipse,
+    FigureType_Triangle,
+    FigureType_Line
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesFigureType() {
+  static const char * const names[5] = {
+    "Rect",
+    "Ellipse",
+    "Triangle",
+    "Line",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameFigureType(FigureType e) {
+  if (::flatbuffers::IsOutRange(e, FigureType_Rect, FigureType_Line)) return "";
+  const size_t index = static_cast<size_t>(e);
+  return EnumNamesFigureType()[index];
+}
+
+struct Figure FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef FigureBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_TYPE = 4,
+    VT_PAYLOAD = 6
+  };
+  FigureType type() const {
+    return static_cast<FigureType>(GetField<uint16_t>(VT_TYPE, 0));
+  }
+  const ::flatbuffers::String *payload() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_PAYLOAD);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint16_t>(verifier, VT_TYPE, 2) &&
+           VerifyOffset(verifier, VT_PAYLOAD) &&
+           verifier.VerifyString(payload()) &&
+           verifier.EndTable();
+  }
+};
+
+struct FigureBuilder {
+  typedef Figure Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_type(FigureType type) {
+    fbb_.AddElement<uint16_t>(Figure::VT_TYPE, static_cast<uint16_t>(type), 0);
+  }
+  void add_payload(::flatbuffers::Offset<::flatbuffers::String> payload) {
+    fbb_.AddOffset(Figure::VT_PAYLOAD, payload);
+  }
+  explicit FigureBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<Figure> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<Figure>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<Figure> CreateFigure(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    FigureType type = FigureType_Rect,
+    ::flatbuffers::Offset<::flatbuffers::String> payload = 0) {
+  FigureBuilder builder_(_fbb);
+  builder_.add_payload(payload);
+  builder_.add_type(type);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<Figure> CreateFigureDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    FigureType type = FigureType_Rect,
+    const char *payload = nullptr) {
+  auto payload__ = payload ? _fbb.CreateString(payload) : 0;
+  return CreateFigure(
+      _fbb,
+      type,
+      payload__);
+}
 
 struct RectData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef RectDataBuilder Builder;

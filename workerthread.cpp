@@ -26,18 +26,41 @@ void WorkerThread::readPendingDatagrams()
     while (udpSocket->hasPendingDatagrams()) {
         QNetworkDatagram datagram = udpSocket->receiveDatagram();
         flatbuffers::Verifier verifier = flatbuffers::Verifier((unsigned char *)datagram.data().data(), datagram.data().length());
-        if (verifier.VerifyBuffer<EllipseData>(nullptr)) {
-            auto rect = flatbuffers::GetRoot<EllipseData>(datagram.data());
-            emit resultReady(new EllipseObject(rect));
-        } else if (verifier.VerifyBuffer<RectData>(nullptr)){
-            auto rect = flatbuffers::GetRoot<RectData>(datagram.data());
-            emit resultReady(new RectObject(rect));
-        } else if (verifier.VerifyBuffer<LineData>(nullptr)) {
-            auto rect = flatbuffers::GetRoot<LineData>(datagram.data());
-            emit resultReady(new LineObject(rect));
-        } else if (verifier.VerifyBuffer<TriangleData>(nullptr)) {
-            auto rect = flatbuffers::GetRoot<TriangleData>(datagram.data());
-            emit resultReady(new TriangleObject(rect));
+        if (verifier.VerifyBuffer<Figure>(nullptr)) {
+            auto figure = flatbuffers::GetRoot<Figure>(datagram.data());
+            flatbuffers::Verifier verifierFigure = flatbuffers::Verifier((unsigned char *)figure->payload()->data(), figure->payload()->Length());
+            switch (figure->type()) {
+            case FigureType::FigureType_Ellipse:{
+                if (verifierFigure.VerifyBuffer<EllipseData>(nullptr)){
+                    auto rect = flatbuffers::GetRoot<EllipseData>(figure->payload()->data());
+                    emit resultReady(new EllipseObject(rect));
+                }
+                break;
+            }
+            case FigureType::FigureType_Rect:{
+                if (verifierFigure.VerifyBuffer<RectData>(nullptr)){
+                    auto rect = flatbuffers::GetRoot<RectData>(figure->payload()->data());
+                    emit resultReady(new RectObject(rect));
+                }
+                break;
+            }
+            case FigureType::FigureType_Triangle:{
+                if (verifierFigure.VerifyBuffer<TriangleData>(nullptr)){
+                    auto rect = flatbuffers::GetRoot<TriangleData>(figure->payload()->data());
+                    emit resultReady(new TriangleObject(rect));
+                }
+                break;
+            }
+            case FigureType::FigureType_Line:{
+                if (verifierFigure.VerifyBuffer<LineData>(nullptr)){
+                    auto rect = flatbuffers::GetRoot<LineData>(figure->payload()->data());
+                    emit resultReady(new LineObject(rect));
+                }
+                break;
+            }
+            default:
+                break;
+            }
         }
     }
 }
